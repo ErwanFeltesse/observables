@@ -1,5 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { map, filter } from 'rxjs/operators';
+
+interface User {
+  firstName: string;
+  lastName: string;
+}
 
 @Component({
   selector: 'app-root',
@@ -7,21 +13,25 @@ import { BehaviorSubject } from 'rxjs';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
+  user: BehaviorSubject<any> = new BehaviorSubject(null);
+
   ngOnInit(): void {
-    const subject = new BehaviorSubject<number>(0);
-
-    const s1 = subject.subscribe((x) => {
-      console.log('[s1] : ', x);
+    //http
+    this.user.next({
+      firstName: 'Jean',
+      lastName: 'Dupuy',
     });
 
-    subject.next(1);
+    const s1 = this.user
+      .pipe(
+        filter((user: User) => true),
+        map((user: User) => {
+          return `${user.firstName} ${user.lastName}`;
+        })
+      )
+      .subscribe((fullName: string) => console.log(fullName));
 
-    const s2 = subject.subscribe((x) => {
-      console.log('[s2] : ', x);
-    });
-
-    s1.unsubscribe();
-
-    subject.next(2);
+    // s1.unsubscribe();
+    //subject.next(2);
   }
 }
